@@ -1,0 +1,92 @@
+{
+  "timestamp": "2026-05-08 14:57:30",
+  "base_url": "http://localhost:3000",
+  "concurrency": 30,
+  "scenarios": [
+    {
+      "desc": "首页并发",
+      "total": 600,
+      "success": 600,
+      "failed": 0,
+      "errors": 0,
+      "success_rate": "100.0%",
+      "concurrency": 30,
+      "latency_ms": {
+        "avg": "76.9",
+        "min": "9.5",
+        "max": "95.3",
+        "p50": "77.8",
+        "p99": "94.7"
+      },
+      "qps": "13.0"
+    },
+    {
+      "desc": "SQL注入洪水",
+      "total": 600,
+      "success": 600,
+      "failed": 0,
+      "errors": 0,
+      "success_rate": "100.0%",
+      "concurrency": 30,
+      "latency_ms": {
+        "avg": "40.4",
+        "min": "6.7",
+        "max": "57.6",
+        "p50": "40.8",
+        "p99": "54.8"
+      },
+      "qps": "24.7"
+    },
+    {
+      "desc": "混合流量70/30",
+      "total": 600,
+      "success": 600,
+      "failed": 0,
+      "errors": 0,
+      "success_rate": "100.0%",
+      "concurrency": 30,
+      "latency_ms": {
+        "avg": "66.4",
+        "min": "7.2",
+        "max": "103.1",
+        "p50": "65.8",
+        "p99": "102.3"
+      },
+      "qps": "15.1"
+    },
+    {
+      "desc": "突发流量",
+      "total": 90,
+      "success": 90,
+      "failed": 0,
+      "errors": 0,
+      "success_rate": "100.0%",
+      "concurrency": 90,
+      "latency_ms": {
+        "avg": "66.8",
+        "min": "7.4",
+        "max": "119.1",
+        "p50": "68.9",
+        "p99": "N/A"
+      },
+      "qps": "15.0"
+    },
+    {
+      "desc": "登录压力",
+      "total": 300,
+      "success": 300,
+      "failed": 0,
+      "errors": 0,
+      "success_rate": "100.0%",
+      "concurrency": 10,
+      "latency_ms": {
+        "avg": "27.4",
+        "min": "14.9",
+        "max": "36.4",
+        "p50": "27.2",
+        "p99": "35.4"
+      },
+      "qps": "36.5"
+    }
+  ]
+}

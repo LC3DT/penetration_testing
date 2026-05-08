@@ -1,0 +1,100 @@
+{
+  "base_url": "http://localhost:3000",
+  "crawled_at": "2026-05-08 14:57:25",
+  "pages": {
+    "/": {
+      "status": 200,
+      "size": 5408,
+      "title": "(无标题)",
+      "links": 5,
+      "forms": 0
+    },
+    "/products/1": {
+      "status": 200,
+      "size": 5428,
+      "title": "(无标题)",
+      "links": 0,
+      "forms": 1
+    },
+    "/products/2": {
+      "status": 200,
+      "size": 1032,
+      "title": "(无标题)",
+      "links": 0,
+      "forms": 1
+    },
+    "/products/3": {
+      "status": 200,
+      "size": 1019,
+      "title": "(无标题)",
+      "links": 0,
+      "forms": 1
+    },
+    "/products/4": {
+      "status": 200,
+      "size": 1027,
+      "title": "(无标题)",
+      "links": 0,
+      "forms": 1
+    },
+    "/products": {
+      "status": 200,
+      "size": 2121,
+      "title": "(无标题)",
+      "links": 8,
+      "forms": 1
+    },
+    "/products/5": {
+      "status": 200,
+      "size": 875,
+      "title": "(无标题)",
+      "links": 0,
+      "forms": 1
+    },
+    "/products/6": {
+      "status": 200,
+      "size": 1020,
+      "title": "(无标题)",
+      "links": 0,
+      "forms": 1
+    },
+    "/products/7": {
+      "status": 200,
+      "size": 876,
+      "title": "(无标题)",
+      "links": 0,
+      "forms": 1
+    },
+    "/products/8": {
+      "status": 200,
+      "size": 867,
+      "title": "(无标题)",
+      "links": 0,
+      "forms": 1
+    },
+    "/dashboard": {
+      "status": 200,
+      "size": 780,
+      "title": "(无标题)",
+      "links": 3,
+      "forms": 0,
+      "auth_required": true
+    },
+    "/profile": {
+      "status": 200,
+      "size": 1059,
+      "title": "(无标题)",
+      "links": 0,
+      "forms": 2,
+      "auth_required": true
+    }
+  },
+  "protected_pages": [],
+  "errors": [],
+  "statistics": {
+    "total_pages": 12,
+    "public": 10,
+    "auth_required": 2,
+    "errors": 0
+  }
+}
