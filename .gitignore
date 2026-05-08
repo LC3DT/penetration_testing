@@ -1,0 +1,11 @@
+# Test result files
+results/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Report files (generated)
+WAF_检测报告.md
+*.md.report

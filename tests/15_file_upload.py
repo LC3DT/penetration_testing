@@ -21,10 +21,15 @@ def run():
     for p in payloads:
         try:
             content = p.get("content", "malicious upload test content")
-            if isinstance(content, str) and content.startswith("A" * 100):
-                content = bytes(content, "utf-8")
-            elif isinstance(content, str):
-                content = content.encode("utf-8", errors="ignore")
+            if isinstance(content, str):
+                # Polyglot content uses latin-1 to preserve byte values from \u escapes
+                if p.get("category") == "polyglot":
+                    content = content.encode("latin-1")
+                elif len(content) > 1000:
+                    # Large content: just use as bytes for DoS test
+                    content = content.encode("utf-8")
+                else:
+                    content = content.encode("utf-8")
 
             files = {"file": (p["payload"], content, p.get("content_type", "text/plain"))}
             r = s.post(urljoin(BASE_URL, "/profile/upload"), files=files,

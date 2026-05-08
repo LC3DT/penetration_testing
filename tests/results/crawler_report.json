@@ -1,6 +1,6 @@
 {
-  "base_url": "http://192.168.1.51:3000",
-  "crawled_at": "2026-05-08 17:38:41",
+  "base_url": "http://192.168.1.214:3000",
+  "crawled_at": "2026-05-08 18:55:44",
   "pages": {
     "/": {
       "status": 200,
@@ -11,10 +11,10 @@
     },
     "/products/1": {
       "status": 200,
-      "size": 5822,
+      "size": 35105,
       "title": "(无标题)",
       "links": 0,
-      "forms": 1
+      "forms": 3
     },
     "/products/2": {
       "status": 200,

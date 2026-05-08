@@ -79,8 +79,14 @@ def run():
     comment_payloads = [p for p in payloads if p.get("injection_point") == "comment"]
     for p in comment_payloads:
         try:
-            r = s.post(urljoin(BASE_URL, "/products/1/comment"),
-                       data={"username": "injector", "content": p["payload"]},
+            field = p.get("field", "content")
+            data = {"username": "injector", "content": "test_inject"}
+            if field == "username":
+                data["username"] = p["payload"]
+                data["content"] = "test"
+            else:
+                data["content"] = p["payload"]
+            r = s.post(urljoin(BASE_URL, "/products/1/comment"), data=data,
                        timeout=TIMEOUT, allow_redirects=False)
             ok(f"{p['name']} → HTTP {r.status_code}")
         except Exception as e:
@@ -91,8 +97,10 @@ def run():
     contact_payloads = [p for p in payloads if p.get("injection_point") == "contact"]
     for p in contact_payloads:
         try:
-            r = s.post(urljoin(BASE_URL, "/contact"),
-                       data={"name": p["payload"] if "inj" in p["payload"] else "inj_name", "email": p["payload"] if "@" in p["payload"] else "inj@test.com", "message": p["payload"] if "msg" in p["payload"] or "DROP" in p["payload"] else "inj_msg"},
+            field = p.get("field", "message")
+            data = {"name": "inj_name", "email": "inj@test.com", "message": "inj_msg"}
+            data[field] = p["payload"]
+            r = s.post(urljoin(BASE_URL, "/contact"), data=data,
                        timeout=TIMEOUT, allow_redirects=False)
             ok(f"{p['name']} → HTTP {r.status_code}")
         except Exception as e:

@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-05-08 17:38:50",
-  "total_time": "8.7s",
+  "timestamp": "2026-05-08 18:56:04",
+  "total_time": "24.2s",
   "modules": {
     "01": {
       "name": "基础功能",
@@ -9,28 +9,28 @@
     },
     "02": {
       "name": "SQL注入",
-      "fail": 1,
-      "time": "0.1s"
+      "fail": 0,
+      "time": "2.1s"
     },
     "03": {
       "name": "XSS跨站脚本",
-      "fail": 12,
-      "time": "0.0s"
+      "fail": 0,
+      "time": "0.4s"
     },
     "04": {
       "name": "命令注入",
-      "fail": 3,
-      "time": "0.1s"
+      "fail": 0,
+      "time": "0.3s"
     },
     "05": {
       "name": "路径遍历",
-      "fail": 9,
-      "time": "0.0s"
+      "fail": 2,
+      "time": "0.2s"
     },
     "06": {
       "name": "认证绕过",
       "fail": 0,
-      "time": "0.1s"
+      "time": "1.1s"
     },
     "07": {
       "name": "全站爬虫",
@@ -39,19 +39,59 @@
     },
     "08": {
       "name": "API模糊测试",
-      "fail": 0,
-      "time": "0.1s"
+      "fail": 1,
+      "time": "10.3s"
     },
     "09": {
       "name": "并发压力",
       "fail": 0,
-      "time": "8.1s"
+      "time": "8.3s"
     },
     "10": {
       "name": "日志分析",
       "fail": 0,
       "time": "0.0s"
+    },
+    "11": {
+      "name": "SSRF请求伪造",
+      "fail": 0,
+      "time": "0.2s"
+    },
+    "12": {
+      "name": "SSTI模板注入",
+      "fail": 0,
+      "time": "0.2s"
+    },
+    "13": {
+      "name": "CRLF注入",
+      "fail": 2,
+      "time": "0.1s"
+    },
+    "14": {
+      "name": "开放重定向",
+      "fail": 0,
+      "time": "0.2s"
+    },
+    "15": {
+      "name": "文件上传绕过",
+      "fail": 2,
+      "time": "0.2s"
+    },
+    "16": {
+      "name": "NoSQL注入",
+      "fail": 0,
+      "time": "0.1s"
+    },
+    "17": {
+      "name": "HTTP参数污染",
+      "fail": 0,
+      "time": "0.1s"
+    },
+    "18": {
+      "name": "信息泄露",
+      "fail": 11,
+      "time": "0.1s"
     }
   },
-  "total_fail": 25
+  "total_fail": 18
 }
