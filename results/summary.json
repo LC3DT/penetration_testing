@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-05-08 14:57:30",
-  "total_time": "5.6s",
+  "timestamp": "2026-05-08 17:38:50",
+  "total_time": "8.7s",
   "modules": {
     "01": {
       "name": "基础功能",
@@ -9,22 +9,22 @@
     },
     "02": {
       "name": "SQL注入",
-      "fail": 0,
+      "fail": 1,
       "time": "0.1s"
     },
     "03": {
       "name": "XSS跨站脚本",
-      "fail": 0,
-      "time": "0.1s"
+      "fail": 12,
+      "time": "0.0s"
     },
     "04": {
       "name": "命令注入",
-      "fail": 0,
+      "fail": 3,
       "time": "0.1s"
     },
     "05": {
       "name": "路径遍历",
-      "fail": 0,
+      "fail": 9,
       "time": "0.0s"
     },
     "06": {
@@ -45,7 +45,7 @@
     "09": {
       "name": "并发压力",
       "fail": 0,
-      "time": "4.9s"
+      "time": "8.1s"
     },
     "10": {
       "name": "日志分析",
@@ -53,5 +53,5 @@
       "time": "0.0s"
     }
   },
-  "total_fail": 0
+  "total_fail": 25
 }

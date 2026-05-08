@@ -36,6 +36,14 @@ TEST_MODULES = {
     "08": ("API模糊测试", "08_api_fuzzing"),
     "09": ("并发压力", "09_concurrent"),
     "10": ("日志分析", "10_log_analyzer"),
+    "11": ("SSRF请求伪造", "11_ssrf"),
+    "12": ("SSTI模板注入", "12_ssti"),
+    "13": ("CRLF注入", "13_crlf"),
+    "14": ("开放重定向", "14_open_redirect"),
+    "15": ("文件上传绕过", "15_file_upload"),
+    "16": ("NoSQL注入", "16_nosql"),
+    "17": ("HTTP参数污染", "17_hpp"),
+    "18": ("信息泄露", "18_info_disclosure"),
 }
 
 

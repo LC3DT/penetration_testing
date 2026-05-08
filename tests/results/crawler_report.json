@@ -1,6 +1,6 @@
 {
-  "base_url": "http://localhost:3000",
-  "crawled_at": "2026-05-08 14:57:25",
+  "base_url": "http://192.168.1.51:3000",
+  "crawled_at": "2026-05-08 17:38:41",
   "pages": {
     "/": {
       "status": 200,
@@ -11,7 +11,7 @@
     },
     "/products/1": {
       "status": 200,
-      "size": 5428,
+      "size": 5822,
       "title": "(无标题)",
       "links": 0,
       "forms": 1

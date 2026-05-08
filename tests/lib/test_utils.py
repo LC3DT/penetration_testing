@@ -7,8 +7,9 @@ import time
 import re
 import tempfile
 import requests
+import random
 from urllib.parse import urljoin
-from typing import Optional, Any
+from typing import Optional, Any, List, Dict
 
 BASE_URL = os.environ.get("BASE_URL", "http://localhost:3000")
 TIMEOUT = int(os.environ.get("TIMEOUT", "10"))
@@ -180,3 +181,20 @@ def save_results(name: str) -> None:
     with open(path, "w", encoding="utf-8") as f:
         json.dump(report, f, ensure_ascii=False, indent=2)
     info(f"结果已保存: {path}")
+
+
+def load_payloads(name: str) -> list:
+    """Load JSON payload file from tests/payloads/<name>.json"""
+    payload_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "payloads")
+    path = os.path.join(payload_dir, f"{name}.json")
+    if not os.path.exists(path):
+        warn(f"Payload 文件不存在: {path}")
+        return []
+    with open(path, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def payload_loaded(name: str) -> bool:
+    """Check if a payload file exists"""
+    payload_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "payloads")
+    return os.path.exists(os.path.join(payload_dir, f"{name}.json"))

